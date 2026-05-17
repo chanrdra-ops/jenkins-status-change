@@ -20,14 +20,17 @@ pipeline {
                     def commitMsg = sh(script: "git log -1 --pretty=%B", returnStdout: true).trim()
                     echo "Processing commit message: ${commitMsg}"
 
-                    // Safely extract key using a separate non-CPS function
                     def jiraKey = extractJiraKey(commitMsg)
 
                     if (jiraKey) {
                         echo "Extracted Jira Key: ${jiraKey}"
 
-                        // FIX: Explicitly using site name 'jirauser' matching your configuration
-                        jiraAddComment site: 'jirauser', idOrKey: jiraKey, comment: "Automation this one suite ran successfully. Status changed to Done."
+                        // Post comment
+                        jiraAddComment site: 'jirauser', idOrKey: jiraKey, comment: "Automation suite executed successfully."
+
+                        // FIX: Transition the issue status directly.
+                        // Try transitioning by the destination name 'Done' first.
+                        jiraTransitionIssue site: 'jirauser', idOrKey: jiraKey, input: [transition: [name: 'Done']]
                     } else {
                         echo "No valid Jira ticket ID found in this commit message."
                     }
@@ -37,12 +40,11 @@ pipeline {
     }
 }
 
-// Separate helper function marked with @NonCPS to handle regex safely
 @NonCPS
 def extractJiraKey(String text) {
     def matcher = (text =~ /[A-Z]+-[0-9]+/)
     if (matcher.find()) {
-        return matcher.group(0) // Securely extracts just the plain text string (e.g., SCRUM-1)
+        return matcher.group(0)
     }
     return null
 }
