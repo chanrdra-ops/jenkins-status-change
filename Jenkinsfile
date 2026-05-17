@@ -28,9 +28,9 @@ pipeline {
                         // Post comment
                         jiraAddComment site: 'jirauser', idOrKey: jiraKey, comment: "Automation suite executed successfully."
 
-                        // FIX: Transition the issue status directly.
-                        // Try transitioning by the destination name 'Done' first.
-                        jiraTransitionIssue site: 'jirauser', idOrKey: jiraKey, id: '31' // Replace '31' with your workflow's unique transition ID
+                        // FIXED: Wrapped transition parameters inside the 'input' payload map
+                        // Switch [id: '31'] to [name: 'Done'] if you want to use the status name instead
+                        jiraTransitionIssue site: 'jirauser', idOrKey: jiraKey, input: [transition: [id: '31']]
                     } else {
                         echo "No valid Jira ticket ID found in this commit message."
                     }
