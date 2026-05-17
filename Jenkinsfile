@@ -1,22 +1,25 @@
 pipeline {
     agent any
 
+    tools {
+        // This injects the Maven paths we just saved in the Jenkins UI
+        maven 'Maven3'
+    }
+
     triggers {
-        // Keeps the hook trigger active via code definition
         githubPush()
     }
 
     stages {
         stage('Checkout Code') {
             steps {
-                // This downloads the specific commit version from GitHub dynamically
                 checkout scm
             }
         }
 
         stage('Execute Parallel Selenium Tests') {
             steps {
-                // Runs your multi-threaded Maven configuration on your local machine
+                // Jenkins will now know exactly what 'mvn' means!
                 sh 'mvn clean test'
             }
         }
@@ -24,7 +27,6 @@ pipeline {
         stage('Update Jira Ticket') {
             steps {
                 script {
-                    // Extract Jira issue key (e.g., SCRUM-1) from the latest commit message
                     def commitMsg = sh(script: "git log -1 --pretty=%B", returnStdout: true).trim()
                     echo "Processing commit message: ${commitMsg}"
 
@@ -34,11 +36,11 @@ pipeline {
                         def jiraKey = matcher[0]
                         echo "Extracted Jira Key: ${jiraKey}"
 
-                        // Moves the matching ticket to the "Done" column using ID 41
+                        // Moves your card to Done (ID 41)
                         jiraTransitionIssue idOrKey: jiraKey, input: [transition: [id: '41']]
-                        jiraAddComment comment: "Parallel automation execution completed successfully via local Jenkins pipeline.", idOrKey: jiraKey
+                        jiraAddComment comment: "Automation run successful. Status transitioned dynamically via local Jenkins.", idOrKey: jiraKey
                     } else {
-                        echo "No valid updating this script uppercase Jira ticket ID found in this commit message. Skipping transition."
+                        echo "No valid Jira ticket ID found in commit message."
                     }
                 }
             }
