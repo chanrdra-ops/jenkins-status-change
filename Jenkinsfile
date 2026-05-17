@@ -27,11 +27,10 @@ pipeline {
                         def jiraKey = matcher[0]
                         echo "Extracted Jira Key: ${jiraKey}"
 
-                        // Jenkins sends the comment. Your Jira flow will intercept this comment
-                        // and handle shifting the ticket status on its side automatically.
-                        jiraComment issueKey: jiraKey, body: "Automation this one suite ran successfully. Status changed to Done."
+                        // FIX: Changed 'jiraComment' to 'jiraAddComment' with correct plugin syntax
+                        jiraAddComment idOrKey: jiraKey, comment: "Automation this one suite ran successfully. Status changed to Done."
                     } else {
-                        echo "No valid  Jira ticket ID found in NewChanges this one message."
+                        echo "No valid Jira ticket ID found in NewChanges this one message."
                     }
                 }
             }
