@@ -1,15 +1,6 @@
 pipeline {
     agent any
 
-    tools {
-        // This injects the Maven paths we just saved in the Jenkins UI
-        maven 'Maven3'
-    }
-
-    triggers {
-        githubPush()
-    }
-
     stages {
         stage('Checkout Code') {
             steps {
@@ -19,8 +10,8 @@ pipeline {
 
         stage('Execute Parallel Selenium Tests') {
             steps {
-                // Jenkins will now know exactly what 'mvn' means!
-                sh 'mvn clean test'
+                // We use the absolute path right here so Mac absolutely cannot say "command not found"
+                sh '/usr/local/Cellar/maven/3.8.4/bin/mvn clean test'
             }
         }
 
@@ -36,11 +27,11 @@ pipeline {
                         def jiraKey = matcher[0]
                         echo "Extracted Jira Key: ${jiraKey}"
 
-                        // Moves your card to Done (ID 41)
+                        // Transitions issue to Done using ID 41
                         jiraTransitionIssue idOrKey: jiraKey, input: [transition: [id: '41']]
-                        jiraAddComment comment: "Automation run successful. Status transitioned dynamically via local Jenkins.", idOrKey: jiraKey
+                        jiraAddComment comment: "Automation suite ran successfully. Status changed to Done.", idOrKey: jiraKey
                     } else {
-                        echo "No changes  made valid Jira ticket ID found in commit message."
+                        echo "No valid Jira ticket ID found in commit message."
                     }
                 }
             }
