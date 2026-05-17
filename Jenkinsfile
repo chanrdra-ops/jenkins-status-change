@@ -27,11 +27,8 @@ pipeline {
                         def jiraKey = matcher[0]
                         echo "Extracted Jira Key: ${jiraKey}"
 
-                        // Uses the exact workflow execution step verified from your system log
-                        // Change 'Done' to your exact workflow transition name or use actionId: 41
-                        jiraExecuteWorkflow issueKey: jiraKey, idOrName: 'Done'
-
-                        // Adds the comment confirming successful pipeline run
+                        // Jenkins sends the comment. Your Jira flow will intercept this comment
+                        // and handle shifting the ticket status on its side automatically.
                         jiraComment issueKey: jiraKey, body: "Automation suite ran successfully. Status changed to Done."
                     } else {
                         echo "No valid Jira ticket ID found in commit message."
