@@ -40,7 +40,7 @@ pipeline {
                         jiraTransitionIssue idOrKey: jiraKey, input: [transition: [id: '41']]
                         jiraAddComment comment: "Automation run successful. Status transitioned dynamically via local Jenkins.", idOrKey: jiraKey
                     } else {
-                        echo "No valid Jira ticket ID found in commit message."
+                        echo "No changes  made valid Jira ticket ID found in commit message."
                     }
                 }
             }
