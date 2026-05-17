@@ -30,7 +30,7 @@ pipeline {
 
                         // FIX: Transition the issue status directly.
                         // Try transitioning by the destination name 'Done' first.
-                        jiraTransitionIssue site: 'jirauser', idOrKey: jiraKey, input: [transition: [name: 'Done']]
+                        jiraTransitionIssue site: 'jirauser', idOrKey: jiraKey, id: '31' // Replace '31' with your workflow's unique transition ID
                     } else {
                         echo "No valid Jira ticket ID found in this commit message."
                     }
