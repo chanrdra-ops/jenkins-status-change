@@ -30,7 +30,7 @@ pipeline {
 
                         // FIXED: Wrapped transition parameters inside the 'input' payload map
                         // Switch [id: '31'] to [name: 'Done'] if you want to use the status name instead
-                        jiraTransitionIssue site: 'jirauser', idOrKey: jiraKey, input: [transition: [id: '31']]
+                        jiraTransitionIssue site: 'jirauser', idOrKey: jiraKey, input: [transition: [id: '41']]
                     } else {
                         echo "No valid Jira ticket ID found in this commit message."
                     }
