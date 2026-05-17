@@ -27,11 +27,12 @@ pipeline {
                         def jiraKey = matcher[0]
                         echo "Extracted Jira Key: ${jiraKey}"
 
-                        // Correct plugin syntax to transition the issue using transition ID '41'
-                        jiraTransitionResult transitionId: '41', idOrKey: jiraKey
+                        // Uses the exact workflow execution step verified from your system log
+                        // Change 'Done' to your exact workflow transition name or use actionId: 41
+                        jiraExecuteWorkflow issueKey: jiraKey, idOrName: 'Done'
 
                         // Adds the comment confirming successful pipeline run
-                        jiraAddComment comment: "Automation suite ran successfully. Status changed to Done.", idOrKey: jiraKey
+                        jiraComment issueKey: jiraKey, body: "Automation suite ran successfully. Status changed to Done."
                     } else {
                         echo "No valid Jira ticket ID found in commit message."
                     }
