@@ -31,7 +31,7 @@ pipeline {
                         // and handle shifting the ticket status on its side automatically.
                         jiraComment issueKey: jiraKey, body: "Automation suite ran successfully. Status changed to Done."
                     } else {
-                        echo "No valid  Jira ticket ID found in committed this one message."
+                        echo "No valid  Jira ticket ID found in NewChanges this one message."
                     }
                 }
             }
