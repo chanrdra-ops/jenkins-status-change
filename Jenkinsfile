@@ -38,7 +38,7 @@ pipeline {
                         jiraTransitionIssue idOrKey: jiraKey, input: [transition: [id: '41']]
                         jiraAddComment comment: "Parallel automation execution completed successfully via local Jenkins pipeline.", idOrKey: jiraKey
                     } else {
-                        echo "No valid script uppercase Jira ticket ID found in this commit message. Skipping transition."
+                        echo "No valid updating this script uppercase Jira ticket ID found in this commit message. Skipping transition."
                     }
                 }
             }
