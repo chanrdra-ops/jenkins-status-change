@@ -10,7 +10,7 @@ pipeline {
 
         stage('Execute Parallel Selenium Tests') {
             steps {
-                // We use the absolute path right here so Mac absolutely cannot say "command not found"
+                // Using absolute path ensures Jenkins finds your local Mac Maven installation
                 sh '/usr/local/Cellar/maven/3.8.4/bin/mvn clean test'
             }
         }
@@ -27,8 +27,10 @@ pipeline {
                         def jiraKey = matcher[0]
                         echo "Extracted Jira Key: ${jiraKey}"
 
-                        // Transitions issue to Done using ID 41
-                        jiraTransitionIssue idOrKey: jiraKey, input: [transition: [id: '41']]
+                        // Correct plugin syntax to transition the issue using transition ID '41'
+                        jiraTransitionResult transitionId: '41', idOrKey: jiraKey
+
+                        // Adds the comment confirming successful pipeline run
                         jiraAddComment comment: "Automation suite ran successfully. Status changed to Done.", idOrKey: jiraKey
                     } else {
                         echo "No valid Jira ticket ID found in commit message."
