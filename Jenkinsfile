@@ -1,35 +1,44 @@
 pipeline {
     agent any
 
+    triggers {
+        // Keeps the hook trigger active via code definition
+        githubPush()
+    }
+
     stages {
-        stage('Pull Code') {
+        stage('Checkout Code') {
             steps {
-                // No repo URL needed here! Jenkins gets it from the UI configuration.
+                // This downloads the specific commit version from GitHub dynamically
                 checkout scm
             }
         }
 
         stage('Execute Parallel Selenium Tests') {
             steps {
-                // This triggers your Maven parallel settings on your local machine
+                // Runs your multi-threaded Maven configuration on your local machine
                 sh 'mvn clean test'
             }
         }
 
-        stage('Update Jira to Done') {
+        stage('Update Jira Ticket') {
             steps {
                 script {
-                    // Extract Jira Key (e.g., SCRUM-1) from the latest commit message
+                    // Extract Jira issue key (e.g., SCRUM-1) from the latest commit message
                     def commitMsg = sh(script: "git log -1 --pretty=%B", returnStdout: true).trim()
-                    def jiraKey = (commitMsg =~ /[A-Z]+-[0-9]+/)[0]
+                    echo "Processing commit message: ${commitMsg}"
 
-                    if (jiraKey) {
-                        echo "Found Jira Ticket: ${jiraKey}. Updating status..."
-                        // Uses Transition ID 41 to move your ticket to Done
+                    def matcher = (commitMsg =~ /[A-Z]+-[0-9]+/)
+
+                    if (matcher.find()) {
+                        def jiraKey = matcher[0]
+                        echo "Extracted Jira Key: ${jiraKey}"
+
+                        // Moves the matching ticket to the "Done" column using ID 41
                         jiraTransitionIssue idOrKey: jiraKey, input: [transition: [id: '41']]
+                        jiraAddComment comment: "Parallel automation execution completed successfully via local Jenkins pipeline.", idOrKey: jiraKey
                     } else {
-                        echo "No Jira ticket key found in commit message. Skipping update."
-                         echo "No Jira ticket key found in commit message. Skipping update."
+                        echo "No valid script uppercase Jira ticket ID found in this commit message. Skipping transition."
                     }
                 }
             }
